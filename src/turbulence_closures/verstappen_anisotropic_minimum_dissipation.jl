@@ -300,13 +300,13 @@ end
     cx_ux = (
             ▶z_aaf(ijk..., norm_∂x_u, u) * ▶xz_caf(ijk..., norm_∂x_c², c)
         + ▶xyz_ccf(ijk..., norm_∂x_v, v) * ▶xz_caf(ijk..., norm_∂x_c, c) * ▶yz_acf(ijk..., norm_∂y_c, c)
-        +   ▶x_caa(ijk..., norm_∂x_w, w) * ▶xz_caf(ijk..., norm_∂x_c, c) * norm_∂z_ccf(ijk..., c)
+        +   ▶x_caa(ijk..., norm_∂x_w, w) * ▶xz_caf(ijk..., norm_∂x_c, c) * norm_∂z_c(ijk..., c)
     )
 
     cy_uy = (
           ▶xyz_ccf(ijk..., norm_∂y_u, u) * ▶yz_acf(ijk..., norm_∂y_c, c) * ▶xz_caf(ijk..., norm_∂x_c, c)
         +     norm_∂y_v(ijk..., v)       * ▶yz_acf(ijk..., norm_∂y_c², c)
-        +   ▶x_caa(ijk..., norm_∂y_w, w) * ▶yz_acf(ijk..., norm_∂y_c, c) * norm_∂z_ccf(ijk..., c)
+        +   ▶x_caa(ijk..., norm_∂y_w, w) * ▶yz_acf(ijk..., norm_∂y_c, c) * norm_∂z_c(ijk..., c)
     )
 
     cz_uz = (
