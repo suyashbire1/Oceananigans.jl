@@ -310,9 +310,9 @@ end
     )
 
     cz_uz = (
-          ▶x_caa(ijk..., norm_∂z_u, u) * norm_∂z_ccf(ijk..., c) * ▶xz_caf(ijk..., norm_∂x_c, c)
-        + ▶y_aca(ijk..., norm_∂z_v, v) * norm_∂z_ccf(ijk..., c) * ▶yz_acf(ijk..., norm_∂y_c, c)
-        + ▶z_aaf(ijk..., norm_∂z_w, w) *  norm_∂z_c²(ijk..., c)
+          ▶x_caa(ijk..., norm_∂z_u, u) * norm_∂z_c(ijk..., c) * ▶xz_caf(ijk..., norm_∂x_c, c)
+        + ▶y_aca(ijk..., norm_∂z_v, v) * norm_∂z_c(ijk..., c) * ▶yz_acf(ijk..., norm_∂y_c, c)
+        + ▶z_aaf(ijk..., norm_∂z_w, w) * norm_∂z_c²(ijk..., c)
     )
 
     return cx_ux + cy_uy + cz_uz

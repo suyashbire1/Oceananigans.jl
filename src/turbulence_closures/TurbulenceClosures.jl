@@ -7,6 +7,7 @@ export
 
   ConstantAnisotropicDiffusivity,
 
+  AbstractSmagorinsky,
   ConstantSmagorinsky,
   DeardorffSmagorinsky,
   BlasiusSmagorinsky,
