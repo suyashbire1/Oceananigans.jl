@@ -333,6 +333,15 @@ end
 get_ν(closure::IsotropicDiffusivity, K) = closure.ν
 get_κ(closure::IsotropicDiffusivity, K) = (T=closure.κ, S=closure.κ)
 
+get_ν(closure::AbstractSmagorinsky, K) = K.νₑ
+get_κ(closure::AbstractSmagorinsky, K) = (T=K.νₑ, S=K.νₑ) # only works for Pr=1
+
+get_ν(closure::VerstappenAnisotropicMinimumDissipation, K) = K.νₑ
+get_κ(closure::VerstappenAnisotropicMinimumDissipation, K) = (T=K.κₑ.T, S=K.κₑ.S)
+
+get_ν(closure::AnisotropicMinimumDissipation, K) = K.νₑ
+get_κ(closure::AnisotropicMinimumDissipation, K) = (T=K.κₑ.T, S=K.κₑ.S)
+
 get_ν(closure::ConstantAnisotropicDiffusivity, K) = closure.νv
 get_κ(closure::ConstantAnisotropicDiffusivity, K) = (T=closure.κv, S=closure.κv)
 
