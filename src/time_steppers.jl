@@ -131,7 +131,7 @@ function calculate_interior_source_terms!(arch, grid, constants, eos, closure, U
                                                 + fv(grid, U.v, constants.f, i, j, k)
                                                 - δx_c2f(grid, pHY′, i, j, k) / (grid.Δx * eos.ρ₀)
                                                 + ∂ⱼ_2ν_Σ₁ⱼ(i, j, k, grid, closure, U.u, U.v, U.w, K)
-                                                + F.u(i, j, k, grid, U.u, U.v, U.w, Φ.T, Φ.S))
+                                                + F.u(i, j, k, grid, U, Φ))
                 end
             end
         end
@@ -145,7 +145,7 @@ function calculate_interior_source_terms!(arch, grid, constants, eos, closure, U
                                                 - fu(grid, U.u, constants.f, i, j, k)
                                                 - δy_c2f(grid, pHY′, i, j, k) / (grid.Δy * eos.ρ₀)
                                                 + ∂ⱼ_2ν_Σ₂ⱼ(i, j, k, grid, closure, U.u, U.v, U.w, K)
-                                                + F.v(i, j, k, grid, U.u, U.v, U.w, Φ.T, Φ.S))
+                                                + F.v(i, j, k, grid, U, Φ))
                 end
             end
         end
@@ -157,7 +157,7 @@ function calculate_interior_source_terms!(arch, grid, constants, eos, closure, U
                 @loop for i in (1:grid.Nx; (blockIdx().x - 1) * blockDim().x + threadIdx().x)
                     @inbounds Gw[i, j, k] = (-u∇w(grid, U.u, U.v, U.w, i, j, k)
                                                 + ∂ⱼ_2ν_Σ₃ⱼ(i, j, k, grid, closure, U.u, U.v, U.w, K)
-                                                + F.w(i, j, k, grid, U.u, U.v, U.w, Φ.T, Φ.S))
+                                                + F.w(i, j, k, grid, U, Φ))
                 end
             end
         end
@@ -169,7 +169,7 @@ function calculate_interior_source_terms!(arch, grid, constants, eos, closure, U
                 @loop for i in (1:grid.Nx; (blockIdx().x - 1) * blockDim().x + threadIdx().x)
                     @inbounds GT[i, j, k] = (-div_flux(grid, U.u, U.v, U.w, Φ.T, i, j, k)
                                                 + ∇_κ_∇T(i, j, k, grid, Φ.T, closure, K)
-                                                + F.T(i, j, k, grid, U.u, U.v, U.w, Φ.T, Φ.S))
+                                                + F.T(i, j, k, grid, U, Φ))
                 end
             end
         end
@@ -181,7 +181,7 @@ function calculate_interior_source_terms!(arch, grid, constants, eos, closure, U
                 @loop for i in (1:grid.Nx; (blockIdx().x - 1) * blockDim().x + threadIdx().x)
                     @inbounds GS[i, j, k] = (-div_flux(grid, U.u, U.v, U.w, Φ.S, i, j, k)
                                                 + ∇_κ_∇S(i, j, k, grid, Φ.S, closure, K)
-                                                + F.S(i, j, k, grid, U.u, U.v, U.w, Φ.T, Φ.S))
+                                                + F.S(i, j, k, grid, U, Φ))
                 end
             end
         end
