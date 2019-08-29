@@ -11,11 +11,11 @@ end
 Returns a `VerstappenAnisotropicMinimumDissipation` closure object of type `T` with
 
     * `C`  : Poincaré constant
-    * `Cb` : Buoyancy modification constant
-    * `ν`  : 'molecular' background viscosity for momentum
-    * `κ`  : 'molecular' background diffusivity for tracers
+    * `Cb` : Buoyancy modification constant (set to 1 to enable AMD's buoyancy term)
+    * `ν`  : background viscosity for momentum
+    * `κ`  : background diffusivity for tracers
 
-Based on the version of the anisotropic minimum dissipation closure proposed by:
+Based on the anisotropic minimum dissipation closure proposed by:
 
  - Verstappen, R., "How much eddy dissipation is needed to counterbalance the 
     "nonlinear production of small, unresolved scales in a large-eddy simulation 
@@ -24,7 +24,7 @@ Based on the version of the anisotropic minimum dissipation closure proposed by:
 and described by
 
  - Vreugdenhil C., and Taylor J., "Large-eddy simulations of stratified plane Couette 
- flow using the anisotropic minimum-dissipation model", (2018).
+   flow using the anisotropic minimum-dissipation model", (2018).
 """
 function VerstappenAnisotropicMinimumDissipation(FT=Float64;
      C = 1/12,
@@ -66,7 +66,7 @@ end
                        eos, grav, u, v, w, T, S) where FT
 
     ijk = (i, j, k, grid)
-    σ =  norm_θᵢ²_ccc(i, j, k, grid, c) # Tracer variance
+    σ =  norm_θᵢ²_ccc(i, j, k, grid, c)
 
     if σ == 0
         κˢᵍˢ = zero(FT)
@@ -124,48 +124,6 @@ end
     return uᵢ₁_uⱼ₁_Σ₁ⱼ + uᵢ₂_uⱼ₂_Σ₂ⱼ + uᵢ₃_uⱼ₃_Σ₃ⱼ
 end
 
-@inline function norm_uᵢₐ_uⱼₐ_Σᵢⱼ_ccf(i, j, k, grid, closure, u, v, w)
-    ijk = (i, j, k, grid)
-    uvw = (u, v, w)
-    ijkuvw = (i, j, k, grid, u, v, w)
-
-    uᵢ₁_uⱼ₁_Σ₁ⱼ = (
-         ▶z_aaf(ijk..., norm_Σ₁₁, uvw...) *   ▶z_aaf(ijk..., norm_∂x_u², uvw...)
-      +  ▶z_aaf(ijk..., norm_Σ₂₂, uvw...) * ▶xyz_ccf(ijk..., norm_∂x_v², uvw...)
-      +  ▶z_aaf(ijk..., norm_Σ₃₃, uvw...) *   ▶x_caa(ijk..., norm_∂x_w², uvw...)
-
-      +  2 *   ▶z_aaf(ijk..., norm_∂x_u, uvw...) * ▶xyz_ccf(ijk..., norm_∂x_v_Σ₁₂, uvw...)
-      +  2 *   ▶z_aaf(ijk..., norm_∂x_u, uvw...) *   ▶x_caa(ijk..., norm_∂x_w_Σ₁₃, uvw...)
-      +  2 * ▶xyz_ccf(ijk..., norm_∂x_v, uvw...) *   ▶x_caa(ijk..., norm_∂x_w, uvw...) 
-           *   ▶y_aca(ijk..., norm_Σ₂₃, uvw...)
-    )
-
-    uᵢ₂_uⱼ₂_Σ₂ⱼ = (
-      + ▶z_aaf(ijk..., norm_Σ₁₁, uvw...) * ▶xyz_ccf(ijk..., norm_∂y_u², uvw...)
-      + ▶z_aaf(ijk..., norm_Σ₂₂, uvw...) *   ▶z_aaf(ijk..., norm_∂y_v², uvw...)
-      + ▶z_aaf(ijk..., norm_Σ₃₃, uvw...) *   ▶y_aca(ijk..., norm_∂y_w², uvw...)
-
-      +  2 *  ▶z_aaf(ijk..., norm_∂y_v, uvw...) * ▶xyz_ccf(ijk..., norm_∂y_u_Σ₁₂, uvw...)
-      +  2 * ▶xy_cca(ijk..., norm_∂y_u, uvw...) *   ▶y_aca(ijk..., norm_∂y_w, uvw...) 
-           *  ▶x_caa(ijk..., norm_Σ₁₃, uvw...)
-      +  2 *  ▶z_aaf(ijk..., norm_∂y_v, uvw...) *   ▶y_aca(ijk..., norm_∂y_w_Σ₂₃, uvw...)
-    )
-
-    uᵢ₃_uⱼ₃_Σ₃ⱼ = (
-      + ▶z_aaf(ijk..., norm_Σ₁₁, uvw...) * ▶x_caa(ijk..., norm_∂z_u², uvw...)
-      + ▶z_aaf(ijk..., norm_Σ₂₂, uvw...) * ▶y_aca(ijk..., norm_∂z_v², uvw...)
-      + ▶z_aaf(ijk..., norm_Σ₃₃, uvw...) * ▶z_aaf(ijk..., norm_∂z_w², uvw...)
-
-      +  2 *   ▶x_caa(ijk..., norm_∂z_u, uvw...) * ▶y_aca(ijk..., norm_∂z_v, uvw...) 
-           * ▶xyz_ccf(ijk..., norm_Σ₁₂, uvw...)
-      +  2 *   ▶z_aaf(ijk..., norm_∂z_w, uvw...) * ▶x_caa(ijk..., norm_∂z_u_Σ₁₃, uvw...)
-      +  2 *   ▶z_aaf(ijk..., norm_∂z_w, uvw...) * ▶y_aca(ijk..., norm_∂z_v_Σ₂₃, uvw...)
-    )
-
-    return uᵢ₁_uⱼ₁_Σ₁ⱼ + uᵢ₂_uⱼ₂_Σ₂ⱼ + uᵢ₃_uⱼ₃_Σ₃ⱼ
-end
-
-
 #####
 ##### trace(∇u) = uᵢⱼ uᵢⱼ
 #####
@@ -190,29 +148,6 @@ end
         # cff
       + ▶yz_acc(ijk..., norm_∂y_w², uvw...)
       + ▶yz_acc(ijk..., norm_∂z_v², uvw...)
-    )
-end
-
-@inline function norm_tr_∇u_ccf(i, j, k, grid, uvw...)
-    ijk = (i, j, k, grid)
-
-    return (
-        # ccc
-          ▶z_aaf(ijk..., norm_∂x_u², uvw...)
-        + ▶z_aaf(ijk..., norm_∂y_v², uvw...)
-        + ▶z_aaf(ijk..., norm_∂z_w², uvw...)
-
-        # ffc
-      + ▶xyz_ccf(ijk..., norm_∂x_v², uvw...)
-      + ▶xyz_ccf(ijk..., norm_∂y_u², uvw...)
-
-        # fcf
-        + ▶x_caa(ijk..., norm_∂x_w², uvw...)
-        + ▶x_caa(ijk..., norm_∂z_u², uvw...)
-
-        # cff
-        + ▶y_aca(ijk..., norm_∂y_w², uvw...)
-        + ▶y_aca(ijk..., norm_∂z_v², uvw...)
     )
 end
 
