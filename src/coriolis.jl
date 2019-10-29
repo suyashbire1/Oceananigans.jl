@@ -50,6 +50,28 @@ end
 @inline y_f_cross_U(i, j, k, grid, coriolis::FPlane, U) =   coriolis.f * ▶xy_cfa(i, j, k, grid, U.u)
 @inline z_f_cross_U(i, j, k, grid::AbstractGrid{FT}, coriolis::FPlane, U) where FT = zero(FT)
 
+"""
+    NonTraditionalFPlane{FT} <: AbstractRotation
+
+A parameter object for constant rotation around a vertical axis.
+"""
+struct NonTraditionalFPlane{FT} <: AbstractRotation
+    f  :: FT
+    fc :: FT
+end
+
+function NonTraditionalFPlane(FT=Float64; rotation_rate=nothing, latitude=nothing)
+    f  = 2rotation_rate*sind(latitude)
+    fc = 2rotation_rate*cosd(latitude)
+    end
+end
+
+@inline fv_minus_fcw(i, j, k, grid, coriolis::NonTraditionalFPlane, U) = coriolis.fc * ▶z_aac(i, j, k, grid, U.w) - coriolis.f * ▶y_aca(i, j, k, grid, U.v)
+
+@inline x_f_cross_U(i, j, k, grid, coriolis::NonTraditionalFPlane, U) =   ▶z_faa(i, j, k, grid, fv_minus_fcw, coriolis, U)
+@inline y_f_cross_U(i, j, k, grid, coriolis::NonTraditionalFPlane, U) =   coriolis.f * ▶xy_cfa(i, j, k, grid, U.u)
+@inline z_f_cross_U(i, j, k, grid, coriolis::NonTraditionalFPlane, U) = - coriolis.fc * ▶xz_caf(i, j, k, grid, U.u)
+
 #####
 ##### The Beta Plane
 #####
