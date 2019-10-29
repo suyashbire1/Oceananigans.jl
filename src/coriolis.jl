@@ -63,7 +63,6 @@ end
 function NonTraditionalFPlane(FT=Float64; rotation_rate=nothing, latitude=nothing)
     f  = 2rotation_rate*sind(latitude)
     fc = 2rotation_rate*cosd(latitude)
-    end
 end
 
 @inline fv_minus_fcw(i, j, k, grid, coriolis::NonTraditionalFPlane, U) = coriolis.fc * ▶z_aac(i, j, k, grid, U.w) - coriolis.f * ▶y_aca(i, j, k, grid, U.v)
