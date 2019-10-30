@@ -1,6 +1,6 @@
-using .TurbulenceClosures: ▶xy_cfa, ▶xy_fca, ▶z_faa, ▶z_aac, ▶y_aca
+using .TurbulenceClosures: ▶xy_cfa, ▶xy_fca, ▶x_faa, ▶z_aac, ▶y_aca
 
-#####
+####
 ##### Functions for non-rotating models
 #####
 
@@ -68,7 +68,7 @@ end
 
 @inline fv_minus_fcw(i, j, k, grid, coriolis::NonTraditionalFPlane, U) = coriolis.fc * ▶z_aac(i, j, k, grid, U.w) - coriolis.f * ▶y_aca(i, j, k, grid, U.v)
 
-@inline x_f_cross_U(i, j, k, grid, coriolis::NonTraditionalFPlane, U) =   ▶z_faa(i, j, k, grid, fv_minus_fcw, coriolis, U)
+@inline x_f_cross_U(i, j, k, grid, coriolis::NonTraditionalFPlane, U) =   ▶x_faa(i, j, k, grid, fv_minus_fcw, coriolis, U)
 @inline y_f_cross_U(i, j, k, grid, coriolis::NonTraditionalFPlane, U) =   coriolis.f * ▶xy_cfa(i, j, k, grid, U.u)
 @inline z_f_cross_U(i, j, k, grid, coriolis::NonTraditionalFPlane, U) = - coriolis.fc * ▶xz_caf(i, j, k, grid, U.u)
 
