@@ -1,4 +1,4 @@
-using .TurbulenceClosures: ▶xy_cfa, ▶xy_fca, ▶x_faa, ▶z_aac, ▶y_aca
+using .TurbulenceClosures: ▶xy_cfa, ▶xy_fca, ▶x_faa, ▶z_aac, ▶y_aca, ▶xz_caf
 
 ####
 ##### Functions for non-rotating models
